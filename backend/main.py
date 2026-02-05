@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import InvalidSignatureError
@@ -131,6 +132,10 @@ async def get_schedules(line_uid: str, month: str = None):
     except Exception as e:
         print(f"API Get Schedules Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Serve frontend static files (built React app)
+if os.path.exists("static"):
+    app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
