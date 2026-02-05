@@ -8,3 +8,4 @@ jaconv
 requests
 sqlalchemy
 pydantic
+gunicorn

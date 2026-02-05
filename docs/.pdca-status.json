@@ -1,0 +1,47 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-02-05T06:26:56.763Z",
+  "activeFeatures": [
+    "backend"
+  ],
+  "primaryFeature": "backend",
+  "features": {
+    "backend": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-05T06:26:51.681Z",
+        "lastUpdated": "2026-02-05T06:26:56.763Z"
+      },
+      "lastFile": "/Users/hong/Developer/취업 알림 (라인)/backend/main.py"
+    }
+  },
+  "pipeline": {
+    "currentPhase": 1,
+    "level": "Dynamic",
+    "phaseHistory": []
+  },
+  "session": {
+    "startedAt": "2026-02-05T06:18:39.712Z",
+    "onboardingCompleted": false,
+    "lastActivity": "2026-02-05T06:26:56.763Z"
+  },
+  "history": [
+    {
+      "timestamp": "2026-02-05T06:26:51.681Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-05T06:26:56.763Z",
+      "feature": "backend",
+      "phase": "do",
+      "action": "updated"
+    }
+  ]
+}

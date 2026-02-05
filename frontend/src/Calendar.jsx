@@ -17,8 +17,8 @@ const SCHEDULE_TYPES = [
     { code: 'OTHER', name: 'その他', nameKo: '기타', color: '#90A4AE' }
 ];
 
-function Calendar() {
-    const [lineUID, setLineUID] = useState('');
+function Calendar(props) {
+    const [lineUID, setLineUID] = useState(props.uid || '');
     const [currentDate, setCurrentDate] = useState(new Date());
     const [schedules, setSchedules] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -34,8 +34,14 @@ function Calendar() {
     const [isLiffInitialized, setIsLiffInitialized] = useState(false);
 
     useEffect(() => {
-        initializeLiff();
-    }, []);
+        if (props.uid) {
+            setLineUID(props.uid);
+            loadSchedules(props.uid);
+            setIsLiffInitialized(true);
+        } else {
+            initializeLiff();
+        }
+    }, [props.uid]);
 
     const initializeLiff = async () => {
         try {
@@ -127,6 +133,19 @@ function Calendar() {
         }
     };
 
+    const formatTime = (timeStr) => {
+        if (!timeStr) return '';
+        const str = String(timeStr);
+        if (str.includes(':')) {
+            const [h, m] = str.split(':');
+            return `${h}時 ${m}分`;
+        }
+        if (str.length >= 4 && !isNaN(str)) {
+            return `${str.substring(0, 2)}時 ${str.substring(2, 4)}分`;
+        }
+        return str;
+    };
+
     const renderCalendar = () => {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
@@ -195,14 +214,22 @@ function Calendar() {
             </div>
 
             <div className="calendar-weekdays">
-                {['日', '月', '火', '水', '木', '金', '土'].map(day => (
-                    <div key={day} className="weekday">{day}</div>
+                {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
+                    <div key={day} className={`weekday ${index === 0 ? 'sunday' : index === 6 ? 'saturday' : ''}`}>{day}</div>
                 ))}
             </div>
 
             <div className="calendar-grid">
                 {renderCalendar()}
             </div>
+
+            {props.onLogout && (
+                <div className="logout-container">
+                    <button onClick={props.onLogout} className="logout-btn">
+                        ログアウト
+                    </button>
+                </div>
+            )}
 
             {showModal && (
                 <div className="modal" onClick={() => setShowModal(false)}>
@@ -219,7 +246,7 @@ function Calendar() {
                                                 <div key={idx} className="schedule-item" style={{ borderLeft: `4px solid ${type?.color || '#ccc'}` }}>
                                                     <div className="schedule-type-name">{type?.name}</div>
                                                     <div className="schedule-company">{schedule.company_name}</div>
-                                                    {schedule.schedule_time && <div className="schedule-time">⏰ {schedule.schedule_time}</div>}
+                                                    <div className="schedule-time">⏰ {schedule.schedule_time ? formatTime(schedule.schedule_time) : '未定'}</div>
                                                 </div>
                                             );
                                         })}
@@ -267,11 +294,39 @@ function Calendar() {
 
                                 <label>
                                     時間
-                                    <input
-                                        type="time"
-                                        value={formData.schedule_time}
-                                        onChange={(e) => setFormData({ ...formData, schedule_time: e.target.value })}
-                                    />
+                                    <div className="time-selector">
+                                        <select
+                                            value={formData.schedule_time ? formData.schedule_time.split(':')[0] : ''}
+                                            onChange={(e) => {
+                                                const newHour = e.target.value;
+                                                const currentMinute = formData.schedule_time ? formData.schedule_time.split(':')[1] : '00';
+                                                setFormData({ ...formData, schedule_time: newHour ? `${newHour}:${currentMinute}` : '' });
+                                            }}
+                                            className="time-select"
+                                        >
+                                            <option value="">Hour</option>
+                                            {Array.from({ length: 24 }, (_, i) => {
+                                                const hour = String(i).padStart(2, '0');
+                                                return <option key={hour} value={hour}>{hour}</option>;
+                                            })}
+                                        </select>
+                                        <span>:</span>
+                                        <select
+                                            value={formData.schedule_time ? formData.schedule_time.split(':')[1] : ''}
+                                            onChange={(e) => {
+                                                const newMinute = e.target.value;
+                                                const currentHour = formData.schedule_time ? formData.schedule_time.split(':')[0] : '09'; // Default to 09 if not set
+                                                setFormData({ ...formData, schedule_time: currentHour ? `${currentHour}:${newMinute}` : `09:${newMinute}` });
+                                            }}
+                                            className="time-select"
+                                        >
+                                            <option value="">Minute</option>
+                                            {Array.from({ length: 12 }, (_, i) => {
+                                                const minute = String(i * 5).padStart(2, '0');
+                                                return <option key={minute} value={minute}>{minute}</option>;
+                                            })}
+                                        </select>
+                                    </div>
                                 </label>
 
                                 <label>
