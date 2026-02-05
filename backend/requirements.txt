@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+line-bot-sdk
+apscheduler
+mysql-connector-python
+python-dotenv
+jaconv
+requests
+sqlalchemy
+pydantic
