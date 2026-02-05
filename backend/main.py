@@ -38,6 +38,12 @@ nlp_parser = ScheduleParser()
 
 @app.on_event("startup")
 async def startup_event():
+    # Initialize DB (Create tables if not exists)
+    try:
+        db.init_db()
+    except Exception as e:
+        print(f"Startup DB Init failed: {e}")
+        
     scheduler.start()
     print("Scheduler started.")
 

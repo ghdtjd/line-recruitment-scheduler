@@ -18,6 +18,32 @@ class Database:
             database=self.database
         )
 
+    def init_db(self, schema_path: str = 'schema.sql'):
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        try:
+            with open(schema_path, 'r', encoding='utf-8') as f:
+                schema_sql = f.read()
+                
+            # Split assertions because mysql connector can't do multiple at once easily safely
+            # or requires multi=True
+            statements = schema_sql.split(';')
+            
+            for statement in statements:
+                if statement.strip():
+                    try:
+                        cursor.execute(statement)
+                    except Exception as e:
+                        print(f"Schema Init Warning (might be expected): {e}")
+            
+            conn.commit()
+            print("Database initialized successfully.")
+        except Exception as e:
+            print(f"Database initialization failed: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+
     def create_schedule(self, line_uid: str, schedule_data: Dict[str, Any]) -> int:
         conn = self.get_connection()
         cursor = conn.cursor(dictionary=True)
